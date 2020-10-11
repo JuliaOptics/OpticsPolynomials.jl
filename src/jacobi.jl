@@ -8,7 +8,7 @@ export jacobi, jacobi_weight
 Compute the weighting function (1-x)^α * (1-x)^β .
 """
 function jacobi_weight(α, β, x)
-	return (1-x)^α * (1-x )^β
+	return (1-x)^α * (1-x)^β
 end
 
 """
@@ -44,7 +44,7 @@ is also linear w.r.t. the size of argument x.
 """
 function jacobi(n, α, β, x)
 	if n == 0
-		return 1
+		return 1.
 	elseif n == 1
 		return (α + 1) + (α + β + 2) * ((x-1)/2)
 	end
@@ -53,8 +53,8 @@ function jacobi(n, α, β, x)
 	# the latter is the first recursive term.
 	# then loop from 3 up to n, updating
 	# Pnm2, Pnm1, a, b, c, Pn
-	Pnm2 = jacobi(0, α, β, x)
-	Pnm1 = jacobi(1, α, β, x)
+	Pnm2 = 1.  # == jacobi(1, ...)
+	Pnm1 = (α + 1) + (α + β + 2) * ((x-1)/2)  # == jacobi(2, ...)
 	a, b, c = abc(2, α, β, x)
 	Pn = ((b * Pnm1) - (c * Pnm2)) / a
 	if n == 2
