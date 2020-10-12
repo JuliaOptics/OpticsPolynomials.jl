@@ -1,16 +1,15 @@
 # this file depends on jacobi.jl from JuliaOptics/OpticsPolynomials that
 # should be found in the same directory
 
-export (
-    zernike,
-    zernike_norm,
-    zernike_nm_to_fringe,
-    zernike_nm_to_ansi_j,
-    zernike_ansi_j_to_nm,
-    zernike_noll_to_nm,
-    zernike_fringe_to_nm,
-    zernike_zero_separation
-)
+export zernike
+export zernike_nor
+export zernike_nm_to_fring
+export zernike_nm_to_ansi_
+export zernike_ansi_j_to_n
+export zernike_noll_to_n
+export zernike_fringe_to_n
+export zernike_zero_separation
+
 
 """
     kronecker(i,j)
@@ -54,7 +53,7 @@ See also:
     - [`zernike_ansi_j_to_nm`](@ref) (reciprocal of this function)
 """
 function zernike_nm_to_ansi_j(n, m)
-    return (n * (n + 2) + m) ÷ 2)
+    return (n * (n + 2) + m) ÷ 2
 end
 
 """
@@ -66,7 +65,7 @@ See also:
     - [`zernike_nm_to_ansi_j`](@ref) (reciprocal of this function)
 """
 function zernike_ansi_j_to_nm(j)
-    n = ((-3 + √(9 + 8j))÷2
+    n = (-3 + √(9 + 8j))÷2
     m = 2j - n * (n + 2)
     return n, m
 end
@@ -77,7 +76,7 @@ end
 Map j Noll index to ANSI (n,m) indices.
 """
 function zernike_noll_to_nm(j)
-    n = (-1 + √(1 + 8j))÷2 - 1)
+    n = (-1 + √(1 + 8j))÷2 - 1
     if n == 0
         m = 0
     else
