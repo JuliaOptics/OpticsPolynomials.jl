@@ -1,8 +1,8 @@
-import .Jacobi
-
-module Zernike
+# this file depends on jacobi.jl from JuliaOptics/OpticsPolynomials that
+# should be found in the same directory
 
 export (
+    zernike,
     zernike_norm,
     zernike_nm_to_fringe,
     zernike_nm_to_ansi_j,
@@ -138,20 +138,37 @@ are orthogonal only over the unit disk.
 
 norm is a boolean flag indicating whether the result should be orthonormalized
 (scaled to unit RMS) or not.
+
+The zernike polynomials' radial basis is a special case of the Jacobi
+polynomials under the transformation n_jacobi = (n-m)/2, α=0, β=|m|, x=ρ^2-1.
+
+See also:
+
+Zernike functions:
+
+    - [`zernike_ansi_j_to_nm`](@ref)
+    - [`zernike_fringe_to_nm`](@ref)
+    - [`zernike_noll_to_nm`](@ref)
+    - [`zernike_norm`](@ref)
+    - [`zernike_zero_separation`](@ref)
+
+Univariate Orthogonal polynomials:
+
+    - [`jacobi`](@ref)
+    - [`cheby1`](@ref)
+    - [`cheby2`](@ref)
+    - [`legendre`](@ref)
 """
 function zernike(n, m, ρ, θ; norm::Bool=true)
     x = ρ^2 - 1
     n_j = (n - m) ÷ 2
     am = abs(m)
-    # α=0, β=|m|
-    # there is a second syntax where you have x reversed, 1 - ρ^2,
-    # in which ase you swap α and β.  It makes no difference
     out = jacobi(n_j, 0, am, x)
     if m != 0
         if m < 0
-            out *= (ρ^am * sin(m*θ))
+            out *= (ρ.^am .* sin(m.*θ))
         else
-            out *= (ρ^am * cos(m*θ))
+            out *= (ρ.^am .* cos(m.*θ))
         end
 
     end
@@ -159,6 +176,4 @@ function zernike(n, m, ρ, θ; norm::Bool=true)
 		out *= zernike_norm(n,m)
 	end
     return out
-end
-
 end
