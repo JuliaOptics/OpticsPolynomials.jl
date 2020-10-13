@@ -1,6 +1,4 @@
 
-module Jacobi
-
 export jacobi, jacobi_weight
 """
     jacobi_weight(α, β, x)
@@ -67,6 +65,4 @@ function jacobi(n, α, β, x)
 		Pn = ((b * Pnm1) - (c * Pnm2)) / a
 	end
 	return Pn
-end
-
 end
