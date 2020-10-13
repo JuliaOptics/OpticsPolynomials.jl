@@ -2,12 +2,12 @@
 # should be found in the same directory
 
 export zernike
-export zernike_nor
-export zernike_nm_to_fring
-export zernike_nm_to_ansi_
-export zernike_ansi_j_to_n
-export zernike_noll_to_n
-export zernike_fringe_to_n
+export zernike_norm
+export zernike_nm_to_fringe
+export zernike_nm_to_ansi_j
+export zernike_ansi_j_to_nm
+export zernike_noll_to_nm
+export zernike_fringe_to_nm
 export zernike_zero_separation
 
 

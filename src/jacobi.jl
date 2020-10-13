@@ -37,8 +37,9 @@ end
 Compute the Jacobi polynomial of order n and weights α,β at point x.
 
 This function uses a recurrence relation and is numerical stable to very high
-order.  The computation time is linear w.r.t. the order n.  jacobi.(n, a, b, x)
-is also linear w.r.t. the size of argument x.
+order.  The computation time is linear w.r.t. the order n.  jacobi(n, a, b, x)
+is also linear w.r.t. the size of argument x.  x should be passed as an array,
+and jacobi should not be called with dot syntax, for best performance.
 """
 function jacobi(n, α, β, x)
 	if n == 0
