@@ -1,3 +1,5 @@
+using LoopVectorization
+using MuladdMacro
 
 export jacobi, jacobi_weight
 """
@@ -33,11 +35,11 @@ end
 
 @inline function calcb(n, α, β, x)
 	# the parens emphasize the terms, not PEMDAS
-	b1 = (2n + α + β -1)
-	b2 = (2n + α + β)
-	b2 = b2 * (b2 - 2)
-	b = b1 * (b2 * x + α^2 - β^2)
-	return b
+    b1 = @muladd (2n + α + β - 1)
+    b2 = @muladd (2n + α + β)
+    b2 = b2 * (b2 - 2)
+    b = @muladd b1 * (b2 * x + α^2 - β^2)
+    return b
 end
 
 """
@@ -67,15 +69,16 @@ function jacobi(n, α, β, x)
     if n == 2
         return Pn
     end
-    Pnm2 = similar(Pnm1)
+    # Pnm2 = similar(Pnm1)
     for i = 3:n
-        Pnm2, Pnm1 = Pnm1, Pn
+		# Pnm2, Pnm1 = Pnm1, Pn
+		Pnm2, Pnm1, Pn = Pnm1, Pn, Pnm2  # Pnm2 avoids a realloc
         a, c = calcac(n, α, β)
         inva = 1 / a
-        # @avx unroll=4 for i in eachindex(Pn)
-            # Pn[i] = (calcb(n, α, β, x[i]) * Pnm1[i] - c * Pnm2[i]) * inva
-		# end
-        Pn = ((calcb.(n, α, β, x) .* Pnm1) .- (c .* Pnm2)) ./ a
+        @avx unroll=4 for i in eachindex(Pn)
+            Pn[i] = (calcb(n, α, β, x[i]) * Pnm1[i] - c * Pnm2[i]) * inva
+		end
+        # Pn = ((calcb.(n, α, β, x) .* Pnm1) .- (c .* Pnm2)) .* inva
 	end
     return Pn
 end
