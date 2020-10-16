@@ -1,6 +1,6 @@
 # Legendre
 
-The Legendre polynomials are a family of orthogonal polynomials over the univariate domain $x \in [-1,1]$.  They are a special case of the Jacobi polynomials for $\alpha = \beta = 0$  The implementation in this library uses a recurrence relation for the Jacobi polynomials to compute them.  It is fast and stable to high order $n$.
+The Legendre polynomials are a family of orthogonal polynomials over the univariate domain ``x \in [-1,1]``.  They are a special case of the Jacobi polynomials for ``\alpha = \beta = 0``.  The implementation in this library uses a recurrence relation for the Jacobi polynomials to compute them.  It is fast and stable to high order $n$.
 
 ## Usage
 
