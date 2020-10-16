@@ -139,7 +139,7 @@ norm is a boolean flag indicating whether the result should be orthonormalized
 (scaled to unit RMS) or not.
 
 The zernike polynomials' radial basis is a special case of the Jacobi
-polynomials under the transformation n_jacobi = (n-m)/2, α=0, β=|m|, x=ρ^2-1.
+polynomials under the transformation n_jacobi = (n-m)/2, α=0, β=|m|, x=2ρ^2-1.
 
 See also:
 
@@ -159,20 +159,20 @@ Univariate Orthogonal polynomials:
     - [`legendre`](@ref)
 """
 function zernike(n, m, ρ, θ; norm::Bool=true)
-    x = ρ^2 - 1
+    x = 2ρ.^2 .- 1
     n_j = (n - m) ÷ 2
     am = abs(m)
     out = jacobi(n_j, 0, am, x)
     if m != 0
         if m < 0
-            out *= (ρ.^am .* sin(m.*θ))
+            out .*= (ρ.^am .* sin.(m.*θ))
         else
-            out *= (ρ.^am .* cos(m.*θ))
+            out .*= (ρ.^am .* cos.(m.*θ))
         end
 
     end
 	if norm
-		out *= zernike_norm(n,m)
+		out .*= zernike_norm(n,m)
 	end
     return out
 end
