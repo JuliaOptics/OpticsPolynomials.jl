@@ -6,13 +6,21 @@ The implementation in this library utilizes the property that, given a Jacobi po
 
 ## Usage
 
-The Zernike usage follows from the jacobi one, in that the input is an array or a scalar with substantially higher performance when invoked on arrays.
+The Zernike usage follows from the jacobi one, the function should be called on arrays, i.e. without dot syntax.
 
 ```@example simple
+using OpticsPolynomials
 using GridCreation
-x, y = mkCartVecs(1/8, 16); # -1,1
+using Plots
+x, y = mkCartVecs(1/64, 128); # -1,1
 r, t = cartVecsToPolarGrid(x,y);
+data = zernike(3,1,r,t;norm=false);
+data[r.>1].=NaN; # mask outside unit disk for visuals
+heatmap(data, aspect_ratio=:equal);
+png("coma-heatmap");
+```
 
+![](coma-heatmap.png)
 
 
 ## Core Functions
