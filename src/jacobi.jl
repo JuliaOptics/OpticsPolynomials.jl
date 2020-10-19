@@ -1,7 +1,7 @@
 using LoopVectorization
 using MuladdMacro
 
-export jacobi, jacobi_weight
+export jacobi, jacobi_series, jacobi_sum, jacobi_weight
 """
     jacobi_weight(α, β, x)
 
@@ -44,8 +44,12 @@ This function uses a recurrence relation and is numerical stable to very high
 order.  The computation time is linear w.r.t. the order n.  jacobi(n, a, b, x)
 is also linear w.r.t. the size of argument x.  x should be passed as an array,
 and jacobi should not be called with dot syntax, for best performance.
+
+See also: [`jacobi_series`](@ref), [`jacobi_sum`](@ref)
 """
 function jacobi(n, α, β, x)
+    # the body of this function has largely been copy/pasted to jacobi_sequence
+    # and jacobi_sum.  Changes should be propagated.
 	if n == 0
         return ones(size(x))
     elseif n == 1
@@ -69,26 +73,30 @@ function jacobi(n, α, β, x)
 		@avx unroll = 4 for i in eachindex(Pn)
 			Pn[i] = (b1 * (b2 * x[i] + b3) * Pnm1[i] - c * Pnm2[i]) * inva
 		end
-	end
+    end
 	return Pn
 end
 
 """
     jacobi_series(ns, α, β, x)
 
-Compute a series of jacobi polynomials of orders n.  Returns an array with shape
-(length(ns), size(x)...).
+Compute a series of Jacobi polynomials of orders n.  Returns an array with shape
+(size(x)..., length(ns)).  That is, the _final_ dimension contains the modes
+and the first dimension(s) are spatial.
 
 See also: [`jacobi`](@ref), [`jacobi_sum`](@ref)
 """
 function jacobi_series(ns, α, β, x)
+    # the body of this function is largely copied from jacobi.  Changes to
+    # either should be propagated.
     # allocate the output buffer
-    out = Array{eltype(x), ndims(x)+1}(undef, length(ns), size(x)...)
+    out = Array{eltype(x), ndims(x)+1}(undef, size(x)..., length(ns))
+    plane_idx = length(size(x))+1
     lowest_plane = 1
     if ns[1] == 0
         # set the first element of out to ones, if the first n the user wants
         # is n=0
-        fill!(selectdim(out, 1, lowest_plane), 1.)
+        fill!(selectdim(out, plane_idx, lowest_plane), 1.)
         lowest_plane += 1
     end
     # seed the recurrence relation
@@ -108,18 +116,18 @@ function jacobi_series(ns, α, β, x)
     Pnm2 = similar(Pn)
 
     if ns[lowest_plane] == 1
-        view = selectdim(out, 1, lowest_plane)
+        view = selectdim(out, plane_idx, lowest_plane)
         view .= Pnm1
         lowest_plane += 1
     end
 	if ns[lowest_plane] == 2
-        view = selectdim(out, 1, lowest_plane)
+        view = selectdim(out, plane_idx, lowest_plane)
         view .= Pn
         lowest_plane += 1
     end
 
     # now do the loop that avoids recurrence
-	for i = 3:n
+	for i = 3:ns[end]
         # Pnm2, Pnm1, Pn are purposfully not part of out
 		Pnm2, Pnm1, Pn = Pnm1, Pn, Pnm2
 		a, c, b1, b2, b3 = calcac_startb(i, α, β)
@@ -130,13 +138,13 @@ function jacobi_series(ns, α, β, x)
         for j in eachindex(ns)
 			if ns[j] == i
                 # this order is relevant to the sum
-                view = selectdim(out, 1, lowest_plane)
+                view = selectdim(out, plane_idx, lowest_plane)
                 view .= Pn
                 lowest_plane += 1
                 break
 			end
 		end
-	end
+    end
 	return out
 end
 
@@ -145,10 +153,12 @@ end
 
 Compute a sum of Jacobi polynomial of order n weighted by weights.
 
-See [`jacobi`](@ref) for more details.  α, β are the spatial weights and x the
-argument, passed as an array.
+See also: [`jacobi`](@ref), [`jacobi_series`](@ref)
 """
 function jacobi_sum(ns, weights, α, β, x)
+    # the body of this function is largely copied from jacobi.  Changes to
+    # either should be propagated.
+
 	# start by allocating the output array, be a little clever
 	# around the initialization value
 	out = similar(x)
@@ -196,6 +206,6 @@ function jacobi_sum(ns, weights, α, β, x)
 				break
 			end
 		end
-	end
+    end
 	return out
 end

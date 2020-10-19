@@ -11,11 +11,6 @@ export zernike_fringe_to_nm
 export zernike_zero_separation
 
 
-"""
-    kronecker(i,j)
-
-1 if i==j, else 0; mathematical kronecker function
-"""
 function kronecker(i,j)
     return i==j ? 1 : 0
 end
