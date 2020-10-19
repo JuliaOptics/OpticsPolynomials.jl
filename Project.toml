@@ -3,5 +3,8 @@ uuid = "b6abe8a2-4426-4bca-aa47-11264f1de821"
 authors = ["Brandon <brandondube@gmail.com> and contributors"]
 version = "0.1.0"
 
+[deps]
+LoopVectorization = "bdcacae8-1622-11e9-2a5c-532679323890"
+
 [compat]
 julia = "1"
