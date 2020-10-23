@@ -25,8 +25,8 @@ png("coma-heatmap");
 
 ## Core Functions
 ```@docs
-OpticsPolynomials.zernike
-OpticsPolynomials.zernike_norm
+zernike
+zernike_norm
 ```
 
 ## Index Conversions
@@ -36,26 +36,25 @@ This package includes a suite of functions for converting between various indexi
 ### Noll
 
 ```@docs
-OpticsPolynomials.zernike_noll_to_nm
-OpticsPolynomials.zernike_nm_to_noll
+zernike_noll_to_nm
 ```
 
 ### Fringe
 
 ```@docs
-OpticsPolynomials.zernike_fringe_to_nm
-OpticsPolynomials.zernike_nm_to_fringe
+zernike_fringe_to_nm
+zernike_nm_to_fringe
 ```
 
 ### ANSI Z80.28:2004
 
 ```@docs
-OpticsPolynomials.zernike_ansi_j_to_nm
-OpticsPolynomials.zernike_nm_to_ansi_j
+zernike_ansi_j_to_nm
+zernike_nm_to_ansi_j
 ```
 
 ## Utilities
 
 ```@docs
-OpticsPolynomials.zernike_zero_separation
+zernike_zero_separation
 ```
