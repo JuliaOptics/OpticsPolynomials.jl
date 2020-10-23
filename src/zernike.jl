@@ -33,10 +33,10 @@ end
 Map (n,m) ANSI indices to a single fringe index.
 """
 function zernike_nm_to_fringe(n, m)
-    term1 = (1 + (n + abs(m))÷2)^2
-    term2 = 2*abs(m)
-    term3 = (1 + sign(m)) ÷ 2
-    return term2 - term2 - term3 + 1
+    term1 = (1 + (n + abs(m))/2)^2
+    term2 = 2 * abs(m)
+    term3 = (1 + sign(m)) / 2
+    return Int(trunc(term1 - term2 - term3)) + 1
 end
 
 """
@@ -106,11 +106,11 @@ end
 Map j Fringe index to ANSI (n,m) indices.
 """
 function zernike_fringe_to_nm(j)
-    m_n = 2 * ceil(√j - 1)
+    m_n = 2 * (ceil(Int, √j) - 1)
     g_s = (m_n ÷ 2)^2 + 1
-    n = m_n ÷ 2 + floor((j-g_s)÷2)
-    m = m_n - n * (1 - mod(j-g_s, 2) * 2)
-    return int(n), int(m)
+    n = m_n ÷ 2 + (j-g_s)÷2
+    m = (m_n - n) * (1 - mod(j-g_s, 2) * 2)
+    return n, m
 end
 
 """
@@ -135,23 +135,6 @@ norm is a boolean flag indicating whether the result should be orthonormalized
 
 The zernike polynomials' radial basis is a special case of the Jacobi
 polynomials under the transformation n_jacobi = (n-m)/2, α=0, β=|m|, x=2ρ^2-1.
-
-See also:
-
-Zernike functions:
-
-    - [`zernike_ansi_j_to_nm`](@ref)
-    - [`zernike_fringe_to_nm`](@ref)
-    - [`zernike_noll_to_nm`](@ref)
-    - [`zernike_norm`](@ref)
-    - [`zernike_zero_separation`](@ref)
-
-Univariate Orthogonal polynomials:
-
-    - [`jacobi`](@ref)
-    - [`cheby1`](@ref)
-    - [`cheby2`](@ref)
-    - [`legendre`](@ref)
 """
 function zernike(n, m, ρ, θ; norm::Bool=true)
     x = 2ρ.^2 .- 1
