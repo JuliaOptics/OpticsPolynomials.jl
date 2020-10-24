@@ -13,3 +13,11 @@ end
         @test j == i
     end
 end
+
+@testset "zernike ANSI round trips" begin
+    for i in 1:100
+        n, m = zernike_ansi_j_to_nm(i)
+        j = zernike_nm_to_ansi_j(n,m)
+        @test j == i
+    end
+end
