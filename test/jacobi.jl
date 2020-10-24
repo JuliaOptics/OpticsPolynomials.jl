@@ -54,5 +54,5 @@ end
 
 @testset "jacobi series doesn't break on edge cases" begin
     @test jacobi_series([0], 0., 0., [-1., 0., 1.]) ≈ [1., 1., 1.]
-    @test jacobi_series([1, 2], 0., 0., [-1., 0., 1.]) ≈ [1., 1., 1.; -1., 0., 1.]'
+    @test jacobi_series([1, 2], 0., 0., [-1., 0., 1.]) ≈ [-1. 0. 1.; 1. -0.5, 1.]'
 end
