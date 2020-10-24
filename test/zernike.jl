@@ -21,3 +21,21 @@ end
         @test j == i
     end
 end
+
+
+@testset "zernike gives correct values" begin
+    for i in 1:100
+        # a visual test proves the correctness of the zernike function in
+        # general.  The values could only really be tested in a regression
+        # fashion, generally, which is undesireable and assumes another
+        # implementation is de-facto correct.
+
+        # the test here, therefore, verifies only the analytic value of one
+        # at the edge for the maxima of the azumithal term.
+        n, m = zernike_noll_to_nm(i)
+        out = zernike(n, m, [1.], [0.], norm=false)
+        @test out ≈ [1.]
+        out = zernike(n, m, [1.], [0.], norm=true)
+        @test out ≈ [zernike_norm(n, m)]
+    end
+end
