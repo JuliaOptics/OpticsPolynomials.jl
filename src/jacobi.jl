@@ -26,15 +26,6 @@ function calcac_startb(n, α, β)
     return a, c, b1, b2, b3
 end
 
-@inline function calcb(n, α, β, x)
-	# the parens emphasize the terms, not PEMDAS
-    b1 = @muladd (2n + α + β - 1)
-    b2 = @muladd (2n + α + β)
-    b2 = b2 * (b2 - 2)
-    b = @muladd b1 * (b2 * x + α^2 - β^2)
-    return b
-end
-
 """
     jacobi(n, α, β, x)
 
@@ -99,6 +90,10 @@ function jacobi_series(ns, α, β, x)
         fill!(selectdim(out, plane_idx, lowest_plane), 1.)
         lowest_plane += 1
     end
+
+    if lowest_plane > length(ns)
+        return out
+    end
     # seed the recurrence relation
 	Pnm1 = (α + 1) .+ (α + β + 2) .* ((x .- 1) ./ 2)
 	a, c, b1, b2, b3 = calcac_startb(2, α, β)
@@ -120,10 +115,16 @@ function jacobi_series(ns, α, β, x)
         view .= Pnm1
         lowest_plane += 1
     end
+    if lowest_plane > length(ns)
+        return out
+    end
 	if ns[lowest_plane] == 2
         view = selectdim(out, plane_idx, lowest_plane)
         view .= Pn
         lowest_plane += 1
+    end
+    if lowest_plane > length(ns)
+        return out
     end
 
     # now do the loop that avoids recurrence

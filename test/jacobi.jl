@@ -13,6 +13,9 @@
         if !iseven(n)
             @test jacobi(n, 0., 0., [0.]) ≈ [0.]
         end
+
+        @test jacobi_weight(0., 0., [-1., 0., 1.]) ≈ [1., 1., 1.]
+        @test jacobi(0, 0., 0., [-1., 0., 1.]) ≈ [1., 1., 1.]
     end
 end
 
@@ -49,3 +52,7 @@ end
     @test series[3,:] ≈ redge
 end
 
+@testset "jacobi series doesn't break on edge cases" begin
+    @test jacobi_series([0], 0., 0., [-1., 0., 1.]) ≈ [1., 1., 1.]
+    @test jacobi_series([1, 2], 0., 0., [-1., 0., 1.]) ≈ [1., 1., 1.; -1., 0., 1.]'
+end
