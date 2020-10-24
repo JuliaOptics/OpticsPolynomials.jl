@@ -14,7 +14,7 @@
             @test jacobi(n, 0., 0., [0.]) ≈ [0.]
         end
 
-        @test jacobi_weight(0., 0., [-1., 0., 1.]) ≈ [1., 1., 1.]
+        @test jacobi_weight.(0., 0., [-1., 0., 1.]) ≈ [1., 1., 1.]
         @test jacobi(0, 0., 0., [-1., 0., 1.]) ≈ [1., 1., 1.]
     end
 end
