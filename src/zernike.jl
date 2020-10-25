@@ -25,7 +25,7 @@ The norm is the average squared distance to zero.  By multiplying a zernike
 value by the norm, the term is given unit stdev or RMS.
 """
 function zernike_norm(n::Integer, m::Integer)
-    num = √(2 * (n+1)) / (1 + kronecker(m, 0))
+    return √(2 * (n+1)) / (1 + kronecker(m, 0))
 end
 
 """
