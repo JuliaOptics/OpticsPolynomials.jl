@@ -82,7 +82,7 @@ function jacobi_series(ns, α, β, x)
     # either should be propagated.
     # allocate the output buffer
     out = Array{eltype(x), ndims(x)+1}(undef, size(x)..., length(ns))
-    plane_idx = length(size(x))+1
+    plane_idx = ndims(x)+1
     lowest_plane = 1
     if ns[1] == 0
         # set the first element of out to ones, if the first n the user wants

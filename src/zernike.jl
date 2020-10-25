@@ -2,6 +2,7 @@
 # should be found in the same directory
 
 export zernike
+export zernike_series
 export zernike_norm
 export zernike_nm_to_fringe
 export zernike_nm_to_ansi_j
@@ -138,8 +139,8 @@ polynomials under the transformation n_jacobi = (n-m)/2, α=0, β=|m|, x=2ρ^2-1
 """
 function zernike(n::Integer, m::Integer, ρ, θ; norm::Bool=true)
     x = 2ρ.^2 .- 1
-    n_j = (n - m) ÷ 2
     am = abs(m)
+    n_j = (n - am) ÷ 2
     out = jacobi(n_j, 0, am, x)
     if m != 0
         if m < 0
@@ -152,5 +153,71 @@ function zernike(n::Integer, m::Integer, ρ, θ; norm::Bool=true)
 	if norm
 		out .*= zernike_norm(n,m)
 	end
+    return out
+end
+
+
+function zernike_series(nms, ρ, θ, norm::Bool=true)
+    # 1.  Calculate a lookup table of Jacobi polynomials for the unique elements combinations of $|m|$ and $n_j$.
+    # 2.  Calculate a lookup table of $\rho^{|m|}$ for each unique $|m|$
+    # 3.  Calculate a lookup table of $\sin{m\theta}$ and $\cos{m\theta}$ for each unique $m$.
+    # 4.  For each input $n, m$ look up the appropriate elements and compute the Zernike polynomial.
+    x = 2ρ.^2 .- 1
+    n_j_list = [((n - abs(m)) ÷ 2, abs(m)) for (n,m) in nms]
+    abs_m_type = typeof(n_j_list[1][2])
+    jacobi_sequences_mnj = Dict{abs_m_type,typeof(n_j_list[1][1])}()
+    for (nj, am) in n_j_list
+        if get!(jacobi_sequences_mnj, am, nj) < nj
+            jacobi_sequences_mnj[am] = nj
+        end
+    end
+    jacobi_sequences_mnj = sort(jacobi_sequences_mnj)
+    # jacobi sequences_mnj now maps |m| => max n_j
+
+    # this is step 1 at the top of the function
+    jacobi_sequences = Dict{abs_m_type,Array{eltype(ρ),ndims(ρ)+1}}()
+
+    for k in keys(jacobi_sequences_mnj)
+        njs = 0:jacobi_sequences_mnj[k]
+        seq = jacobi_series(njs, 0., k, x)
+        jacobi_sequences[k] = seq
+    end
+    # jacobi_sequences now maps |m| => arrays with n_j along the last dimension
+    # powers_of_rho is now ρ^|m| for each unique |m|
+
+    plane_idx = ndims(ρ)+1
+    sines = Dict{abs_m_type, typeof(ρ)}()
+    cosines = Dict{abs_m_type, typeof(ρ)}()
+    powers_of_rho = Dict{abs_m_type, typeof(ρ)}()
+    out = Array{eltype(ρ), ndims(ρ)+1}(undef, size(ρ)..., length(nms))
+    for i in eachindex(nms)
+        n, m = nms[i]
+        absm = abs(m)
+
+        out_view = selectdim(out, plane_idx, i)
+        jacobi_piece = selectdim(jacobi_sequences[absm], plane_idx, 1+(n-abs(m))÷2)
+        if m == 0
+            if norm
+                norm_val = zernike_norm(n, m)
+                out_view .= norm_val .* jacobi_piece
+            else
+                out_view .= jacobi_piece
+            end
+        else
+            if m < 0
+                azpiece = get!(sines, m, sin.(m .* θ))
+            else
+                azpiece = get!(cosines, m, cos.(m .* θ))
+            end
+            radialpiece = get!(powers_of_rho, absm, ρ .^ absm)
+
+            if norm
+                norm_val = zernike_norm(n, m)
+                out_view .= norm_val .* jacobi_piece .* radialpiece .* azpiece
+            else
+                out_view .= jacobi_piece .* radialpiece .* azpiece
+            end
+        end
+    end
     return out
 end
