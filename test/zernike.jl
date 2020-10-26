@@ -52,7 +52,7 @@ end
     for mode in modes
         n, m = zernike_noll_to_nm(mode)
         truth = zernike(n, m, r, t)
-        @test out[:, :, i] ≈ truth
+        @test out[:, :, mode] ≈ truth
     end
 end
 
