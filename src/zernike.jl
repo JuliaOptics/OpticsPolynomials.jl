@@ -206,7 +206,6 @@ function zernike_series(nms, ρ, θ; norm::Bool=true)
 		# input
 		sort!(unique!(jacobi_sequences_mnj[key]))
 	end
-    jacobi_sequences_mnj = sort(jacobi_sequences_mnj)
     # jacobi sequences_mnj now maps |m| => max n_j
     # this is step 1 at the top of the function
     jacobi_sequences = Dict{abs_m_type,Array{dtype,ndims(ρ)+1}}()
