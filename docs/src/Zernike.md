@@ -23,6 +23,23 @@ png("coma-heatmap");
 ![](coma-heatmap.png)
 
 
+Multiply polynomials at once can be computed more efficiently than a loop made by the user:
+```@example series
+using OpticsPolynomials
+using GridCreation
+using Plots
+
+x, y = mkCartVecs(1/4, 8);
+r, t = cartVecsToPolarGrid(x,y);
+nms = zernike_fringe_to_nm(1:36);
+# data is 8x8x36
+data = zernike_series(nms, r, t, norm=false)
+# sum is 8x8
+sum = apply_weights(data, ones(36))
+```
+
+The `zernike_sum` function exists as shorthand, though it internally simply calls `zernike_series` and `apply_weights`.
+
 ## Core Functions
 ```@docs
 zernike
