@@ -26,6 +26,8 @@ png("coma-heatmap");
 ## Core Functions
 ```@docs
 zernike
+zernike_series
+zernike_sum
 zernike_norm
 ```
 
@@ -57,4 +59,5 @@ zernike_nm_to_ansi_j
 
 ```@docs
 zernike_zero_separation
+apply_weights
 ```

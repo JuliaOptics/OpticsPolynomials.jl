@@ -1,3 +1,5 @@
+using GridCreation
+
 
 @testset "zernike zero separation" begin
     for i in 1:100
@@ -39,4 +41,29 @@ end
         norm = [zernike_norm(n,m)]
         @test (out ≈ norm) || (out ≈ [0.])
     end
+end
+
+@testset "zernike series contains proper modes" begin
+    x, y = mkCartVecs(1/8, 16)
+    r, t = cartVecsToPolarGrid(x,y)
+    modes = 1:11
+    nms = zernike_noll_to_nm.(modes)
+    out = zernike_series(nms, r, t)
+    for mode in modes
+        n, m = zernike_noll_to_nm(mode)
+        truth = zernike(n, m, r, t)
+        @test out[:, :, i] ≈ truth
+    end
+end
+
+
+@testset "zernike sum contains proper modes" begin
+    x, y = mkCartVecs(1/8, 16)
+    r, t = cartVecsToPolarGrid(x,y)
+    nms = zernike_noll_to_nm.(1:11)
+    weights = zeros(11)
+    weights[5]=1.
+    out = zernike_sum(nms, weights, r, t)
+    truth = zernike(2, -2, r, t)
+    @test out ≈ truth
 end

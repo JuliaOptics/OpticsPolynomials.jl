@@ -3,6 +3,7 @@
 
 export zernike
 export zernike_series
+export zernike_sum
 export zernike_norm
 export zernike_nm_to_fringe
 export zernike_nm_to_ansi_j
@@ -11,6 +12,21 @@ export zernike_noll_to_nm
 export zernike_fringe_to_nm
 export zernike_zero_separation
 
+export apply_weights
+
+"""
+    apply_weights(data, weights)
+
+Given data of arbitrary dimensionality with multiple realizations or modes along
+the final dimension, weight the final dimension by weights and return the sum.
+
+Will have one fewer dimension than the input data.
+"""
+function apply_weights(data, weights)
+    shape = size(data)
+    prod = reshape(data, (:, shape[end])) * weights
+    return reshape(prod, shape[1: end-1])
+end
 
 function kronecker(i,j)
     return i==j ? 1 : 0
@@ -136,6 +152,8 @@ norm is a boolean flag indicating whether the result should be orthonormalized
 
 The zernike polynomials' radial basis is a special case of the Jacobi
 polynomials under the transformation n_jacobi = (n-m)/2, α=0, β=|m|, x=2ρ^2-1.
+
+See also: [`zernike_series`](@ref), [`zernike_sum`](@ref).
 """
 function zernike(n::Integer, m::Integer, ρ, θ; norm::Bool=true)
     x = 2 .* ρ.^2 .- 1
@@ -156,8 +174,17 @@ function zernike(n::Integer, m::Integer, ρ, θ; norm::Bool=true)
     return out
 end
 
+"""
+    zernike_series(nms, ρ, θ[; norm])
 
-function zernike_series(nms, ρ, θ, norm::Bool=true)
+Compute a series of Zernike polynomials of orders (n,m).
+Returns an array with shape (size(ρ)..., length(nms)).
+That is, the _final_ dimension contains the modes and the first dimension(s)
+are spatial.
+
+See also: [`zernike`](@ref), [`zernike_sum`](@ref)
+"""
+function zernike_series(nms, ρ, θ; norm::Bool=true)
     # 1.  Calculate a lookup table of Jacobi polynomials for the unique elements combinations of $|m|$ and $n_j$.
     # 2.  Calculate a lookup table of $\rho^{|m|}$ for each unique $|m|$
     # 3.  Calculate a lookup table of $\sin{m\theta}$ and $\cos{m\theta}$ for each unique $m$.
@@ -236,4 +263,17 @@ function zernike_series(nms, ρ, θ, norm::Bool=true)
     end
     return out
 end
+
+"""
+    zernike_sum(nms, weights, ρ, θ[; norm])
+
+Compute a sum of Zernike polynomials of orders (n,m) weighted by weights.
+
+See also: [`zernike`](@ref), [`zernike_series`](@ref)
+"""
+function zernike_sum(nms, weights, ρ, θ, norm::Bool=true)
+    data = zernike_series(nms, ρ, θ, norm=norm)
+    return apply_weights(data, weights)
+end
+
 
