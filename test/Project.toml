@@ -1,8 +1,4 @@
-name = "OpticsPolynomials"
-uuid = "b6abe8a2-4426-4bca-aa47-11264f1de821"
-authors = ["Brandon <brandondube@gmail.com> and contributors"]
-version = "0.1.0"
-
+name = "runtests"
 [deps]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 GridCreation = "71e55505-9134-4914-97da-b2ab28305a13"
